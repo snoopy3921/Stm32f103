@@ -36,7 +36,7 @@ void I2C1_init(void)
     /* Apply I2C configuration after enabling it */
     I2C_Init(I2C1, &I2C_InitStructure);
 }
-void i2c_Write(uint32_t address, uint32_t address_Word, uint32_t data)
+void i2c_Write(uint32_t address, uint8_t address_Word, uint8_t data)
 	{
 	I2C_AcknowledgeConfig(I2C1,ENABLE);
 	I2C_GenerateSTART(I2C1,ENABLE);
@@ -52,14 +52,14 @@ void i2c_Write(uint32_t address, uint32_t address_Word, uint32_t data)
   while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTING));//EV8
 	
 	I2C_SendData(I2C1,data+2);
-		while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTING));//EV8_2: End of sending data
+		while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));//EV8_2: End of sending data
 		
 
   I2C_GenerateSTOP(I2C1,ENABLE);
 
   //while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));//EV8_2
 	}
-void i2c_Read(uint32_t address, uint32_t address_Word)
+void i2c_Read(uint32_t address, uint8_t address_Word)
 	{
 	I2C_AcknowledgeConfig(I2C1,ENABLE);
   I2C_GenerateSTART(I2C1,ENABLE);
@@ -68,8 +68,8 @@ void i2c_Read(uint32_t address, uint32_t address_Word)
   I2C_Send7bitAddress(I2C1, (address<<1), I2C_Direction_Transmitter);
   while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));//EV6 Select Master transfer mode
 
-	I2C_SendData(I2C1, address_Word);//Choose data's address
-  while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	I2C_SendData(I2C1, address_Word);//Choose data's address EV8_1
+  while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTING));
 	
 	I2C_GenerateSTART(I2C1,ENABLE);
   while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));//EV5
@@ -82,12 +82,16 @@ void i2c_Read(uint32_t address, uint32_t address_Word)
 	I2C_GenerateSTOP(I2C1,ENABLE);
   I2C_ReceiveData(I2C1);
 	}
+	void i2c_Reset()
+	{
+	
+	}
 int main()
 {
 	I2C1_init();
-	i2c_Write(0x50, 0x00, 0x13);
+	i2c_Write(0x50, 0x12, 0x13);
 	for(int i=10000; i>0;i--);
-	i2c_Read(0x50, 0x00);
+	i2c_Read(0x50, 0x12);
 	while(1)
 	{
 	
