@@ -16,9 +16,12 @@ int main()
 	Delay_Init(72);
 	I2Cx_Init(I2C1, 100000, 0x38);
 	//i2c_Write(0x50, 0x12, 0x13);
+	//i2c_Write(0x50, 0x12, 0x13);
+	//delay_ms(1000);
+	//i2c_Read(0x50, 0x12);
 	
 	
-  USART_Printf_Init(9600);
+ 	USART_Printf_Init(9600);
 	//printf("Hello");
 	Delay_Ms(200);
 	//i2c_Read(0x50, 0x12);
